@@ -70,7 +70,7 @@ def generate_all_embeddings(conn):
         print(f"Desviacio estandard: {statistics.stdev(insertion_times):.5f} segons")
 
 def main():
-    conn = connect_db()
+    conn = connect_postgres()
     create_embedding_table(conn)
     generate_all_embeddings(conn)
     conn.close()
