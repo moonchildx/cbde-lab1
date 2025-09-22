@@ -1,5 +1,7 @@
 from datasets import load_dataset
+
 import psycopg2
+from psycopg2 import sql
 
 import time
 import statistics
@@ -7,7 +9,7 @@ import statistics
 import nltk
 nltk.download('punkt')
 
-# Descarregem 10000 dataset Bookcorpus
+# Descarregem dataset Bookcorpus
 def fetch_dataset(max_texts=50000):
     dataset = load_dataset("rojagtap/bookcorpus", split="train", trust_remote_code=True)
     return dataset['text'][:max_texts]
@@ -44,7 +46,7 @@ def create_table(conn):
     cur.close()
 
 def insert_chunk(conn, chunk_id, sentences):
-    query = "INSERT INTO chunks_db (chunk_id, sentence) VALUES (%s, %s)"
+    query = sql.SQL("INSERT INTO chunks_db (chunk_id, sentence) VALUES (%s, %s)")
     
     start = time.time()
     with conn.cursor() as cur:
@@ -82,3 +84,6 @@ def main():
         print(f"Temps maxim: {max(times):.5f} segons")
         print(f"Temps mitja: {statistics.mean(times):.5f} segons")
         print(f"Desviacio estandard: {statistics.stdev(times):.5f} segons")
+
+if __name__ == "__main__":
+    main()
