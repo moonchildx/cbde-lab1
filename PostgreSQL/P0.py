@@ -7,6 +7,7 @@ import statistics
 
 import nltk
 nltk.download('punkt')
+nltk.download('punkt_tab')
 
 # Descarregem dataset Bookcorpus
 def fetch_dataset(max_texts=50000):

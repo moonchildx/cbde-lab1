@@ -16,17 +16,19 @@ def connect_postgres():
     )
 
 def create_embedding_table(conn):
-    query = """
-        CREATE TABLE IF NOT EXISTS embedding_table (
-            sentence_id INT PRIMARY KEY,
-            chunk_id INT,
-            embedding FLOAT8[],
-            CONSTRAINT fk_sentence FOREIGN KEY(sentence_id)
-                REFERENCES chunks_db(id)
-                ON DELETE CASCADE
-        );
-    """
     with conn.cursor() as cur:
+        cur.execute("DROP TABLE IF EXISTS embedding_table;")
+        query = """
+            CREATE TABLE IF NOT EXISTS embedding_table (
+                sentence_id INT PRIMARY KEY,
+                chunk_id INT,
+                embedding FLOAT8[],
+                CONSTRAINT fk_sentence FOREIGN KEY(sentence_id)
+                    REFERENCES chunks_db(id)
+                    ON DELETE CASCADE
+            );
+        """
+        #with conn.cursor() as cur:
         cur.execute(query)
     conn.commit()
 
