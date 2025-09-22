@@ -5,7 +5,7 @@ import time
 import statistics
 
 client = chromadb.PersistentClient(path="/home/aina/Documents/fib/cbde-lab1/chroma_db")
-collection = client.get_or_create_collection(name="bookcorpus_collection")
+collection = client.get_collection(name="bookcorpus_collection")
 
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
