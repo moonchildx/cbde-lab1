@@ -1,5 +1,4 @@
 import psycopg2
-from psycopg2 import sql
 
 from sentence_transformers import SentenceTransformer
 
@@ -23,13 +22,13 @@ def create_embedding_table(conn):
             chunk_id INT,
             embedding FLOAT8[],
             CONSTRAINT fk_sentence FOREIGN KEY(sentence_id)
-                REFERENCES chunk_db(id)
+                REFERENCES chunks_db(id)
                 ON DELETE CASCADE
         );
     """
     with conn.cursor() as cur:
         cur.execute(query)
-        conn.commit()
+    conn.commit()
 
 # Retorna totes les frases
 def get_all_sentences(conn):
@@ -38,36 +37,36 @@ def get_all_sentences(conn):
         return cur.fetchall()
     
 def insert_embedding(conn, sentence_id, chunk_id, embedding):
-    query = sql.SQL("INSERT INTO embeddings_table (sentence_id, chunk_id, embedding) VALUES (%s, %s, %s)")
+    query = "INSERT INTO embedding_table (sentence_id, chunk_id, embedding) VALUES (%s, %s, %s)"
     with conn.cursor() as cur:
-        cur.execute(insert_query, (sentence_id, chunk_id, embedding))
+        cur.execute(query, (sentence_id, chunk_id, embedding))
     conn.commit()
 
 # Genera i insereix embeddings per totes les frases
 def generate_all_embeddings(conn):
     sentences = get_all_sentences(conn)
     
-    insertion_times = []
+    times = []
     start_global = time.time()
 
     for sentence_id, chunk_id, sentence in sentences:
         start = time.time()
 
-        embedding_vector = model.encode(sentence).tolist()
-        insert_embedding(conn, sentence_id, chunk_id, embedding_vector)
+        embedding = model.encode(sentence).tolist()
+        insert_embedding(conn, sentence_id, chunk_id, embedding)
         
         end = time.time()
         elapsed_time = end - start
-        insertion_times.append(elapsed_time)
+        times.append(elapsed_time)
 
     end_global = time.time()
     print(f"Generació de embeddings completat en {end_global - start_global:.5f} segons")
 
-    if insertion_times:
-        print(f"Temps minim: {min(insertion_times):.5f} segons")
-        print(f"Temps maxim: {max(insertion_times):.5f} segons")
-        print(f"Temps mitja: {statistics.mean(insertion_times):.5f} segons")
-        print(f"Desviacio estandard: {statistics.stdev(insertion_times):.5f} segons")
+    if times:
+        print(f"Temps minim: {min(times):.5f} segons")
+        print(f"Temps maxim: {max(times):.5f} segons")
+        print(f"Temps mitja: {statistics.mean(times):.5f} segons")
+        print(f"Desviacio estandard: {statistics.stdev(times):.5f} segons")
 
 def main():
     conn = connect_postgres()

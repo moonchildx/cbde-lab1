@@ -1,7 +1,6 @@
 from datasets import load_dataset
 
 import psycopg2
-from psycopg2 import sql
 
 import time
 import statistics
@@ -46,7 +45,7 @@ def create_table(conn):
     cur.close()
 
 def insert_chunk(conn, chunk_id, sentences):
-    query = sql.SQL("INSERT INTO chunks_db (chunk_id, sentence) VALUES (%s, %s)")
+    query = "INSERT INTO chunks_db (chunk_id, sentence) VALUES (%s, %s)"
     
     start = time.time()
     with conn.cursor() as cur:
